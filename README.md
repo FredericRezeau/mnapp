@@ -1,0 +1,2 @@
+# mnapp
+Masternode Monitoring App
