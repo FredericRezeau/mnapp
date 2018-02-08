@@ -1,0 +1,2 @@
+java -jar compiler.jar --language_in=ES5 --js js/enums.js js/system.js js/camera.js js/entities.js js/effects.js js/scenemanager.js js/resources.js js/utils.js js/renderer.js js/app.js --js_output_file js/app.min.js
+pause
