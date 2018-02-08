@@ -35,6 +35,11 @@ $(document).ready(function () {
         }
     };
 
+    // Handle back button pressed.
+    window.onBackButtonPressed = function () {
+        return MNApp.onBackButtonPressed();
+    };
+
     MNApp.Resources.logoImg = new Image();
     MNApp.Resources.logoImg.src = "logo.png";
 

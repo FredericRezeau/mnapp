@@ -812,7 +812,7 @@
                             break;
                     }
                 }
-                // A page is opened.
+                    // A page is opened.
                 else if (!wasShowingPanel && sceneManager.pageType !== namespace.PageTypeEnum.None) {
                     var item = checkPageItemClick(hudPoint, false, true);
                     if (item) {
@@ -836,6 +836,17 @@
             }
         }
     }
+
+    namespace.onBackButtonPressed = function () {
+        if (sceneManager.showNetworkPanel || sceneManager.showMenuPanel) {
+            sceneManager.showNetworkPanel = false;
+            sceneManager.showMenuPanel = false;
+            return "stay";
+        }
+
+        // Exit the app.
+        return "exit";
+    };
 
     namespace.setSearch = function (value) {
         var old = sceneManager.searchMode;
