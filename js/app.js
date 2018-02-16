@@ -637,7 +637,7 @@
                                     sceneManager.favMasternodes.push(item.id);
                                     sceneManager.saveFavList();
 
-                                    sceneManager.effects.push(new namespace.FloatingEffect(item.x + item.height * 0.3, item.y + item.height * 0.3 - sceneManager.pageScroller.offset, item.height * 0.9));
+                                    sceneManager.effects.push(new namespace.FloatingEffect(item.x + item.height * 0.35, item.y + item.height * 0.47 - sceneManager.pageScroller.offset, item.height * 0.6));
                                 }
                             }
                             else {

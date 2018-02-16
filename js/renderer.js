@@ -36,7 +36,7 @@
         context.save();
 
         // Draw the background.
-        context.fillStyle = "rgb(165, 180, 183)";
+        context.fillStyle = "rgb(166, 186, 197)";
         context.fillRect(0, 0, canvasWidth, canvasHeight);
 
         if (currentAppState === namespace.AppStateEnum.Loading) {
@@ -104,8 +104,9 @@
         context.translate(sceneManager.pageFadeInTime * sceneManager.size.y, -sceneManager.pageScroller.offset);
 
         if (sceneManager.pageScroller.items.length === 0 && sceneManager.pageType === namespace.PageTypeEnum.MyMasternodes) {
+            context.drawImage(namespace.Resources.art01, OFFSET8X, OFFSET0X, OFFSET2X, OFFSET2X, sceneManager.pageScroller.x + sceneManager.pageScroller.width * 0.5 - sceneManager.hudUnit * 1.6, sceneManager.pageScroller.y + sceneManager.hudUnit * 2, sceneManager.hudUnit * 3.2, sceneManager.hudUnit * 3.2);
             context.textAlign = "center";
-            namespace.drawText(context, sceneManager, sceneManager.pageScroller.x + sceneManager.pageScroller.width * 0.5, sceneManager.pageScroller.y + sceneManager.hudUnit * 3, "Your favorite masternode list is empty.", "rgb(110, 130, 150)", sceneManager.fontScale * 0.45);
+            namespace.drawText(context, sceneManager, sceneManager.pageScroller.x + sceneManager.pageScroller.width * 0.5, sceneManager.pageScroller.y + sceneManager.hudUnit * 6.5, "Your favorite masternode list is empty.", "rgb(110, 130, 150)", sceneManager.fontScale * 0.45);
         }
 
         for (var i = 0; i < sceneManager.pageScroller.items.length; i += 1) {
@@ -116,7 +117,7 @@
 
                 context.save();
 
-                namespace.roundRect(context, item.x, item.y, item.width, item.height, sceneManager.hudUnit * 0, (item.star) ? "rgba(236, 245, 247, 1)" : "rgba(255, 255, 255, 1)");
+                namespace.roundRect(context, item.x, item.y, item.width, item.height, sceneManager.hudUnit * 0, (item.star) ? "rgba(234, 242, 246, 1)" : "rgba(255, 255, 255, 1)");
                 namespace.roundRect(context, item.x, item.y + item.height * 0.99, item.width, item.height * 0.01, item.height * 0.005, "rgba(0, 0, 0, 0.2)");
 
                 context.save();
@@ -127,10 +128,10 @@
                     context.translate(-(item.x + item.width * 0.2), -(item.y + item.height * 0.5));
                 }
                 if (item.star) {
-                    context.drawImage(namespace.Resources.art01, OFFSET4X, OFFSET0X, OFFSET1X, OFFSET1X, item.x + item.height * 0.1, item.y + item.height * 0.2, item.height * 0.5, item.height * 0.5);
+                    context.drawImage(namespace.Resources.art01, OFFSET6X, OFFSET0X, OFFSET2X, OFFSET2X, item.x + item.height * 0.125, item.y + item.height * 0.25, item.height * 0.45, item.height * 0.45);
                 }
                 else {
-                    context.drawImage(namespace.Resources.art01, OFFSET5X, OFFSET0X, OFFSET1X, OFFSET1X, item.x + item.height * 0.1, item.y + item.height * 0.2, item.height * 0.5, item.height * 0.5);
+                    context.drawImage(namespace.Resources.art01, OFFSET4X, OFFSET0X, OFFSET2X, OFFSET2X, item.x + item.height * 0.125, item.y + item.height * 0.25, item.height * 0.45, item.height * 0.45);
                 }
                 context.restore();
 
@@ -142,7 +143,7 @@
                 context.textAlign = "center";
                 var color = (item.status === "ENABLED") ? "rgb(145, 180, 90)" : "rgb(190, 80, 80)";
                 namespace.roundRect(context, item.x + item.height * 0.8, item.y + item.height * 0.515, item.height * 1, item.height * 0.2, sceneManager.hudUnit * 0.2, color);
-                namespace.drawText(context, sceneManager, item.x + item.height * 0.8 + item.height * 0.5, item.y + item.height * 0.55, item.status, "rgb(255, 255, 255)", sceneManager.fontScale * 0.3);
+                namespace.drawText(context, sceneManager, item.x + item.height * 0.8 + item.height * 0.5, item.y + item.height * 0.55, item.status, (item.star ? "rgb(241, 247, 168)" : "rgb(255, 255, 255)"), sceneManager.fontScale * 0.3);
 
                 context.textAlign = "left";
                 context.font = "40px Regular";
@@ -157,7 +158,12 @@
                 }
 
                 if (item.url !== "") {
-                    context.drawImage(namespace.Resources.art01, OFFSET3X, OFFSET0X, OFFSET1X, OFFSET1X, item.x + item.width - item.height * 0.6, item.y + item.height * 0.05, item.height * 0.45, item.height * 0.45);
+                    if (item.star) {
+                        context.drawImage(namespace.Resources.art01, OFFSET2X, OFFSET2X, OFFSET2X, OFFSET2X, item.x + item.width - item.height * 0.58, item.y + item.height * 0.05, item.height * 0.46, item.height * 0.46);
+                    }
+                    else {
+                        context.drawImage(namespace.Resources.art01, OFFSET0X, OFFSET2X, OFFSET2X, OFFSET2X, item.x + item.width - item.height * 0.58, item.y + item.height * 0.05, item.height * 0.46, item.height * 0.46);
+                   }
                 }
                 context.restore();
                 
@@ -255,7 +261,7 @@
         }
 
         if (entity.type === namespace.HudEntityTypeEnum.ListButton) {
-            namespace.roundRect(context, rx, ry - sceneManager.hudUnit, entity.width + entity.width, entity.height * 2.4, sceneManager.hudUnit * 0.4, "rgb(165, 180, 183)", false, sceneManager);
+            namespace.roundRect(context, rx, ry - sceneManager.hudUnit, entity.width + entity.width, entity.height * 2.4, sceneManager.hudUnit * 0.4, "rgb(166, 186, 197)", false, sceneManager);
         }
 
         // Apply scaling.
@@ -273,28 +279,28 @@
                 context.drawImage(namespace.Resources.logoImg, rx, ry, entity.width, entity.height);
                 break;
             case namespace.HudEntityTypeEnum.MenuButton:
-                context.drawImage(namespace.Resources.art01, OFFSET0X, OFFSET0X, OFFSET1X, OFFSET1X, rx, ry, entity.width, entity.height);
+                context.drawImage(namespace.Resources.art01, OFFSET0X, OFFSET0X, OFFSET2X, OFFSET2X, rx, ry, entity.width, entity.height);
                 break;
             case namespace.HudEntityTypeEnum.SearchButton:
                 context.globalAlpha = entity.enabled? 1 : sceneManager.searchModeTime * 2;
-                context.drawImage(namespace.Resources.art01, OFFSET2X, OFFSET0X, OFFSET1X, OFFSET1X, rx, ry, entity.width * 0.8, entity.height * 0.8);
+                context.drawImage(namespace.Resources.art01, OFFSET2X, OFFSET0X, OFFSET2X, OFFSET2X, rx, ry, entity.width, entity.height);
                 break;
             case namespace.HudEntityTypeEnum.StarButton:
                 context.globalAlpha = entity.enabled ? 1 : sceneManager.searchModeTime * 2;
-                context.drawImage(namespace.Resources.art01, (sceneManager.pageType === namespace.PageTypeEnum.MyMasternodes) ? OFFSET4X : OFFSET5X, OFFSET0X, OFFSET1X, OFFSET1X, rx, ry, entity.width * 0.8, entity.height * 0.8);
+                context.drawImage(namespace.Resources.art01, (sceneManager.pageType === namespace.PageTypeEnum.MyMasternodes) ? OFFSET4X : OFFSET8X, (sceneManager.pageType === namespace.PageTypeEnum.MyMasternodes) ? OFFSET2X : OFFSET0X, OFFSET2X, OFFSET2X, rx, ry, entity.width, entity.height);
                 break;
             case namespace.HudEntityTypeEnum.ListButton:
-                namespace.roundRect(context, rx, ry, entity.width, entity.height, entity.height * 0.1, "rgb(165, 180, 183)", true, sceneManager);
+                namespace.roundRect(context, rx, ry, entity.width, entity.height, entity.height * 0.1, "rgb(166, 186, 197)", true, sceneManager);
 
                 context.textAlign = "left";
                 namespace.drawText(context, sceneManager, rx + entity.height * 0.8, ry + entity.height * 0.5, "NETWORK", "rgb(80, 85, 85)", sceneManager.fontScale * 0.5);
-                context.drawImage(namespace.Resources.art01, OFFSET6X, OFFSET0X, OFFSET1X, OFFSET1X, rx + entity.height * 0.05, ry + entity.height * 0.15, entity.height * 0.6, entity.height * 0.6);
+                context.drawImage(namespace.Resources.art01, OFFSET5X, OFFSET9X, OFFSET1X, OFFSET1X, rx + entity.height * 0.05, ry + entity.height * 0.15, entity.height * 0.6, entity.height * 0.6);
                 break;
             case namespace.HudEntityTypeEnum.FavButton:
-                namespace.roundRect(context, rx, ry, entity.width, entity.height, entity.height * 0.1, "rgb(165, 180, 183)", true, sceneManager);
+                namespace.roundRect(context, rx, ry, entity.width, entity.height, entity.height * 0.1, "rgb(166, 186, 197)", true, sceneManager);
                 context.textAlign = "left";
                 namespace.drawText(context, sceneManager, rx + entity.height * 0.8, ry + entity.height * 0.5, "FAVORITES", "rgb(80, 85, 85)", sceneManager.fontScale * 0.5);
-                context.drawImage(namespace.Resources.art01, (sceneManager.pageType === namespace.PageTypeEnum.MyMasternodes) ? OFFSET4X : OFFSET5X, OFFSET0X, OFFSET1X, OFFSET1X, rx + entity.height * 0.05, ry + entity.height * 0.15, entity.height * 0.6, entity.height * 0.6);
+                context.drawImage(namespace.Resources.art01, (sceneManager.pageType === namespace.PageTypeEnum.MyMasternodes) ? OFFSET4X : OFFSET8X, (sceneManager.pageType === namespace.PageTypeEnum.MyMasternodes) ? OFFSET2X : OFFSET0X, OFFSET2X, OFFSET2X, rx + entity.height * 0.05, ry + entity.height * 0.15, entity.height * 0.6, entity.height * 0.6);
                 break;
             case namespace.HudEntityTypeEnum.NetworkPanel:
                 var margin = ry * 0.05;
@@ -309,7 +315,7 @@
                 context.textBaseline = "top";
                 context.font = "bold 40px Regular";
                 namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 1 + statsOffset, "MAGNET NETWORK", "rgb(255, 255, 255)", sceneManager.fontScale * 0.5);
-                context.drawImage(namespace.Resources.art01, OFFSET6X, OFFSET0X, OFFSET1X, OFFSET1X, rx + entity.width * 0.5 - margin * 35, ry + margin * 4, margin * 8, margin * 8);
+                context.drawImage(namespace.Resources.art01, OFFSET5X, OFFSET9X, OFFSET1X, OFFSET1X, rx + entity.width * 0.5 - margin * 35, ry + margin * 4, margin * 8, margin * 8);
 
                 context.textAlign = "center";
                 namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 19.6 + statsOffset, sceneManager.masternodes.length.toString(), "rgb(255, 255, 255)", sceneManager.fontScale * 0.6);
@@ -386,7 +392,7 @@
         // Draw the effect.
         switch (effect.type) {
             case namespace.EffectTypeEnum.Floating:
-                context.drawImage(namespace.Resources.art01, OFFSET4X, OFFSET0X, OFFSET1X, OFFSET1X, effect.x - effect.radius, effect.y - effect.radius, effect.radius * 2, effect.radius * 2);
+                context.drawImage(namespace.Resources.art01, OFFSET4X, OFFSET2X, OFFSET2X, OFFSET2X, effect.x - effect.radius, effect.y - effect.radius, effect.radius * 2, effect.radius * 2);
                 break;
         }
 

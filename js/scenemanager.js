@@ -131,8 +131,11 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
         this.hudEntities.push(new namespace.HudEntity(namespace.HudEntityTypeEnum.NetworkPanel));
         this.hudEntities.push(new namespace.HudEntity(namespace.HudEntityTypeEnum.InputBox));
         this.hudEntities.push(new namespace.HudEntity(namespace.HudEntityTypeEnum.MenuButton));
+        this.hudEntities[this.hudEntities.length - 1].scaleFactor = 0.72;
         this.hudEntities.push(new namespace.HudEntity(namespace.HudEntityTypeEnum.SearchButton));
+        this.hudEntities[this.hudEntities.length - 1].scaleFactor = 0.72;
         this.hudEntities.push(new namespace.HudEntity(namespace.HudEntityTypeEnum.StarButton));
+        this.hudEntities[this.hudEntities.length - 1].scaleFactor = 0.72;
         this.hudEntities.push(new namespace.HudEntity(namespace.HudEntityTypeEnum.Title));
     };
 
@@ -364,7 +367,7 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
                     entity.width = headerSize * 3;
                     entity.height = headerSize;
                     entity.tx = this.size.x - entity.width * 0.5 - margin;
-                    entity.ty = headerSize + this.hudUnit + entity.height * 0.5;
+                    entity.ty = headerSize + this.hudUnit + entity.height * 0.6;
 
                     if (!this.showMenuPanel) {
                         entity.tx += this.size.x;
@@ -382,7 +385,7 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
                     entity.width = headerSize * 3;
                     entity.height = headerSize;
                     entity.tx = this.size.x - entity.width * 0.5 - margin;
-                    entity.ty = headerSize + this.hudUnit + entity.height * 0.5 + headerSize;
+                    entity.ty = headerSize + this.hudUnit + entity.height * 0.6 + headerSize;
 
                     if (!this.showMenuPanel) {
                         entity.tx += this.size.x;

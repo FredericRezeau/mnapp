@@ -12,7 +12,7 @@
 
     // Add image resources here.
     namespace.imageItems = {
-        "art01": "art01.png",
+        "art01": "art01.png"
     };
 
 })(window.MNApp = window.MNApp || {});
