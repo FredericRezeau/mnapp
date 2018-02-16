@@ -37,6 +37,7 @@ public class MainActivity extends Activity {
 
         if (savedInstanceState == null) {
             mWebView.loadUrl("http://magnetwork.io/mnapp/index.html?android=1");
+            //mWebView.loadUrl("file:///android_asset/www/index.html");
         }
     }
 

@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '22.0.1'
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.magnetwork.mnapp"
         minSdkVersion 21
         targetSdkVersion 21
-        versionCode 101
-        versionName "1.01"
+        versionCode 102
+        versionName "1.02"
     }
     buildTypes {
         release {
