@@ -145,6 +145,20 @@
                 namespace.roundRect(context, item.x + item.height * 0.8, item.y + item.height * 0.515, item.height * 1, item.height * 0.2, sceneManager.hudUnit * 0.2, color);
                 namespace.drawText(context, sceneManager, item.x + item.height * 0.8 + item.height * 0.5, item.y + item.height * 0.55, item.status, (item.star ? "rgb(241, 247, 168)" : "rgb(255, 255, 255)"), sceneManager.fontScale * 0.3);
 
+                // Draw the reward notifications.
+                var rewards = sceneManager.rewards[item.address];
+                if (item.star) {
+                    if (rewards) {
+                        var startX = item.x + item.height * 0.8 + item.height * 1.1;
+                        for (var r = 0; r < rewards.length; r += 1) {
+                            namespace.roundRect(context, startX, item.y + item.height * 0.515, item.height * 0.3, item.height * 0.2, sceneManager.hudUnit * 0.2, "rgb(237, 28, 36)");
+                            namespace.drawText(context, sceneManager, startX + item.height * 0.15, item.y + item.height * 0.55, rewards[r].type, "rgb(255, 255, 255)", sceneManager.fontScale * 0.3);
+                            startX += item.height * 0.35;
+                        }
+                    }
+                }
+
+
                 context.textAlign = "left";
                 context.font = "40px Regular";
                 namespace.drawText(context, sceneManager, item.x + item.height * 0.8, item.y + item.height * 0.8, item.time, "rgb(80, 85, 85)", sceneManager.fontScale * 0.3);

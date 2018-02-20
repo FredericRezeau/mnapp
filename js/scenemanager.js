@@ -42,6 +42,8 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
         this.hudEntities = [];
         this.masternodes = [];
         this.favMasternodes = [];
+        this.transactions = [];
+        this.rewards = {};
 
         // Reset the hud entity.
         this.selectedHudEntity = null;
@@ -76,6 +78,8 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
             "dailyMax": 0,
             "usd": 0
         };
+
+        this.lastBlock = 0;
     };
 
     // Load the saved favorite list.
@@ -101,6 +105,19 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
         localStorage.setItem(storageKey, JSON.stringify(this.favMasternodes));
     };
 
+    // Load the last block.
+    namespace.SceneManager.prototype.loadLastBlock = function () {
+        var data = localStorage.getItem(storageKey + "block");
+        if (data) {
+            this.lastBlock = JSON.parse(data);
+        }
+    };
+
+    // Save the last block.
+    namespace.SceneManager.prototype.saveLastBlock = function () {
+        localStorage.setItem(storageKey + "block", JSON.stringify(this.lastBlock));
+    };
+
     // Filter item.
     namespace.SceneManager.prototype.filterList = function (item) {
         if (this.searchString === "") {
@@ -119,8 +136,9 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
         // Reset the sceneManager.
         namespace.SceneManager.prototype.reset.call(this);
 
-        // Load the list.
+        // Load the user data.
         namespace.SceneManager.prototype.loadFavList.call(this);
+        namespace.SceneManager.prototype.loadLastBlock.call(this);
 
         // Update the page.
         namespace.SceneManager.prototype.updatePage.call(this, namespace.PageTypeEnum.AllMasternodes, 0, true);
@@ -178,6 +196,34 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
                     });
 
                     that.updatedData = true;
+                }
+            });
+
+            // Retrieve the transaction data.
+            this.updatingData = true;
+            $.post("http://52.170.193.38:8712/.masternode/gettx", function (response) {
+                that.updatingData = false;
+                if (response) {
+                    that.transactions = response.data.slice();
+                    for (var i = that.transactions.length - 1; i >= 0; i -= 1) {
+                        if (that.transactions[i].block > that.lastBlock) {
+                            var addresses = that.transactions[i].addresses;
+                            for (var u = 0; u < addresses.length; u += 1) {
+                                for (var v = 0; v < that.masternodes.length; v += 1) {
+                                    if (that.masternodes[v].pubKey.includes(addresses[u])) {
+                                        if (!that.rewards[addresses[u]]) {
+                                            that.rewards[addresses[u]] = [];
+                                        }
+                                        that.rewards[addresses[u]].push({ "type": that.transactions[i].type, "value": that.transactions[i].value, "block": that.transactions[i].block });
+                                        console.log("reward detected for " + addresses[u] + " - " + JSON.stringify(that.rewards[addresses[u]]) );
+                                    }
+                                }
+                            }
+
+                            that.lastBlock = that.transactions[i].block;
+                            namespace.SceneManager.prototype.saveLastBlock.call(that);
+                        }
+                    }
                 }
             });
 
