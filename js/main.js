@@ -42,7 +42,12 @@ $(document).ready(function () {
 
     if (!window.showNotification) {
         window.showNotification = function (message) {
-            console.log(message);
+            if (window.Android && window.Android.showNotification) {
+                window.Android.showNotification(message);
+            }
+            else {
+                console.log(message);
+            }
         };
     }
 

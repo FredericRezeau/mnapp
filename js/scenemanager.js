@@ -120,6 +120,19 @@ var servicePort = 8711;
         localStorage.setItem(storageKey + "block", JSON.stringify(this.lastBlock));
     };
 
+    // Load the rewards.
+    namespace.SceneManager.prototype.loadRewards = function () {
+        var data = localStorage.getItem(storageKey + "rewards");
+        if (data) {
+            this.rewards = JSON.parse(data);
+        }
+    };
+
+    // Save the rewards.
+    namespace.SceneManager.prototype.saveRewards = function () {
+        localStorage.setItem(storageKey + "rewards", JSON.stringify(this.rewards));
+    };
+
     // Filter item.
     namespace.SceneManager.prototype.filterList = function (item) {
         if (this.searchString === "") {
@@ -141,6 +154,7 @@ var servicePort = 8711;
         // Load the user data.
         namespace.SceneManager.prototype.loadFavList.call(this);
         namespace.SceneManager.prototype.loadLastBlock.call(this);
+        namespace.SceneManager.prototype.loadRewards.call(this);
 
         // Update the page.
         namespace.SceneManager.prototype.updatePage.call(this, namespace.PageTypeEnum.AllMasternodes, 0, true);
@@ -186,7 +200,9 @@ var servicePort = 8711;
                                         if (!duplicate) {
                                             if (window.showNotification && that.favoriteAddresses.indexOf(addresses[u]) !== -1) {
                                                 that.rewards[addresses[u]].push({ "type": that.transactions[i].type, "value": that.transactions[i].value, "block": that.transactions[i].block });
-                                                window.showNotification("Received " + that.transactions[i].value + " MAG " + that.transactions[i].type.toUpperCase() + " reward!");
+                                                that.saveRewards();
+
+                                                window.showNotification("Incoming " + that.transactions[i].type.toUpperCase() + " reward: " + that.transactions[i].value + " MAG.");
                                             }
                                             console.log("reward detected for " + addresses[u] + " - " + JSON.stringify(that.rewards[addresses[u]]));
                                         }

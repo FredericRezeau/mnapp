@@ -631,6 +631,7 @@
 
                 // Get rid of reward notifications.
                 sceneManager.rewards[item.address] = [];
+                sceneManager.saveRewards();
 
                 if (!sceneManager.showNetworkPanel) {
                     if (item.x + item.height > pt.x) {
