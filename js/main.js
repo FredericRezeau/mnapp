@@ -40,6 +40,12 @@ $(document).ready(function () {
         return MNApp.onBackButtonPressed();
     };
 
+    if (!window.showNotification) {
+        window.showNotification = function (message) {
+            console.log(message);
+        };
+    }
+
     MNApp.Resources.logoImg = new Image();
     MNApp.Resources.logoImg.src = "logo.png";
 

@@ -8,6 +8,7 @@ String.prototype.replaceAll = function (search, replacement) {
 };
 
 var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
+var servicePort = 8711;
 
 (function (namespace, undefined) {
     "use strict";
@@ -44,6 +45,7 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
         this.favMasternodes = [];
         this.transactions = [];
         this.rewards = {};
+        this.favoriteAddresses = [];
 
         // Reset the hud entity.
         this.selectedHudEntity = null;
@@ -155,6 +157,50 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
         this.hudEntities.push(new namespace.HudEntity(namespace.HudEntityTypeEnum.StarButton));
         this.hudEntities[this.hudEntities.length - 1].scaleFactor = 0.72;
         this.hudEntities.push(new namespace.HudEntity(namespace.HudEntityTypeEnum.Title));
+
+        // Retrieve the transaction data on timer every 60 seconds.
+        var that = this;
+        setInterval(function () {
+            $.post("http://52.170.193.38:" + servicePort + "/.masternode/gettx", function (response) {
+                if (response) {
+                    that.transactions = response.data.slice();
+                    for (var i = that.transactions.length - 1; i >= 0; i -= 1) {
+                        if (that.transactions[i].block > that.lastBlock) {
+                            var addresses = that.transactions[i].addresses;
+                            for (var u = 0; u < addresses.length; u += 1) {
+                                for (var v = 0; v < that.masternodes.length; v += 1) {
+                                    if (that.masternodes[v].pubKey.includes(addresses[u])) {
+                                        if (!that.rewards[addresses[u]]) {
+                                            that.rewards[addresses[u]] = [];
+                                        }
+
+                                        // Check for duplicates.
+                                        var duplicate = false;
+                                        for (var d = 0; d < that.rewards[addresses[u]].length; d += 1) {
+                                            if (that.rewards[addresses[u]][d].block === that.transactions[i].block) {
+                                                duplicate = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!duplicate) {
+                                            if (window.showNotification && that.favoriteAddresses.indexOf(addresses[u]) !== -1) {
+                                                that.rewards[addresses[u]].push({ "type": that.transactions[i].type, "value": that.transactions[i].value, "block": that.transactions[i].block });
+                                                window.showNotification("Received " + that.transactions[i].value + " MAG " + that.transactions[i].type.toUpperCase() + " reward!");
+                                            }
+                                            console.log("reward detected for " + addresses[u] + " - " + JSON.stringify(that.rewards[addresses[u]]));
+                                        }
+                                    }
+                                }
+                            }
+
+                            that.lastBlock = that.transactions[i].block;
+                            namespace.SceneManager.prototype.saveLastBlock.call(that);
+                        }
+                    }
+                }
+            });
+        }, 60000);
     };
 
     namespace.SceneManager.prototype.getData = function () {
@@ -162,7 +208,7 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
             this.updatingData = true;
             // Retrieve the masternode data.
             var that = this;
-            $.post("http://52.170.193.38:8711/.masternode/getdata", function (response) {
+            $.post("http://52.170.193.38:" + servicePort + "/.masternode/getdata", function (response) {
                 that.updatingData = false;
                 if (response) {
                     that.masternodes = [];
@@ -199,40 +245,12 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
                 }
             });
 
-            // Retrieve the transaction data.
-            this.updatingData = true;
-            $.post("http://52.170.193.38:8712/.masternode/gettx", function (response) {
-                that.updatingData = false;
-                if (response) {
-                    that.transactions = response.data.slice();
-                    for (var i = that.transactions.length - 1; i >= 0; i -= 1) {
-                        if (that.transactions[i].block > that.lastBlock) {
-                            var addresses = that.transactions[i].addresses;
-                            for (var u = 0; u < addresses.length; u += 1) {
-                                for (var v = 0; v < that.masternodes.length; v += 1) {
-                                    if (that.masternodes[v].pubKey.includes(addresses[u])) {
-                                        if (!that.rewards[addresses[u]]) {
-                                            that.rewards[addresses[u]] = [];
-                                        }
-                                        that.rewards[addresses[u]].push({ "type": that.transactions[i].type, "value": that.transactions[i].value, "block": that.transactions[i].block });
-                                        console.log("reward detected for " + addresses[u] + " - " + JSON.stringify(that.rewards[addresses[u]]) );
-                                    }
-                                }
-                            }
-
-                            that.lastBlock = that.transactions[i].block;
-                            namespace.SceneManager.prototype.saveLastBlock.call(that);
-                        }
-                    }
-                }
-            });
-
             // Ping these endpoints for updating.
             $.post("http://download.blockonomy.org/.magnet/getprice", function (response) {
             });
             $.post("http://download.blockonomy.org/.magnet/getusdprice", function (response) {
             });
-            $.post("http://download.blockonomy.org/.magnet/getstats", function (response) {
+            $.post("http://52.170.193.38:" + servicePort + "/.masternode/getstats", function (response) {
                 if (response) {
                     that.masternodestats = response;
                 }
@@ -525,6 +543,7 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
         switch (this.pageType) {
             case namespace.PageTypeEnum.AllMasternodes:
                 if (this.updatedData) {
+                    this.favoriteAddresses = [];
                     this.updatedData = false;
                     this.pageScroller.items = [];
                     for (var i = 0; i < this.masternodes.length; i += 1) {
@@ -539,6 +558,9 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
                             "url": masternode.url,
                             "star": this.isFavorite(masternode.id)
                         };
+                        if (item.star) {
+                            this.favoriteAddresses.push(item.address);
+                        }
                         if (this.filterList(item)) {
                             this.pageScroller.items.push(item);
                         }
@@ -547,6 +569,7 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
                 break;
             case namespace.PageTypeEnum.MyMasternodes:
                 if (this.updatedData) {
+                    this.favoriteAddresses = [];
                     this.updatedData = false;
                     this.pageScroller.items = [];
                     var ignore = [];
@@ -563,6 +586,9 @@ var storageKey = "mnlist_AQMBBwQICwELBgcMBA0FaQ";
                                 "url": masternode.url,
                                 "star": this.isFavorite(masternode.id)
                             };
+                            if (item.star) {
+                                this.favoriteAddresses.push(item.address);
+                            }
                             if (this.filterList(item)) {
                                 this.pageScroller.items.push(item);
                             }

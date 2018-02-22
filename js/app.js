@@ -628,6 +628,10 @@
             var item = sceneManager.pageScroller.items[i];
             if (!deselect && !itemSelected && namespace.pointInRect(pt.x, pt.y, item.x + item.height * 0.05, item.y + item.height * 0.05 - sceneManager.pageScroller.offset, item.x + item.height * 0.05 + item.width - item.height * 0.1, item.y + item.height * 0.05 + item.height - item.height * 0.05 - sceneManager.pageScroller.offset)) {
                 itemSelected = item;
+
+                // Get rid of reward notifications.
+                sceneManager.rewards[item.address] = [];
+
                 if (!sceneManager.showNetworkPanel) {
                     if (item.x + item.height > pt.x) {
                         if (action && sceneManager.canClick) {

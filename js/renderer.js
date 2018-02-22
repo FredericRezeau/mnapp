@@ -109,15 +109,28 @@
             namespace.drawText(context, sceneManager, sceneManager.pageScroller.x + sceneManager.pageScroller.width * 0.5, sceneManager.pageScroller.y + sceneManager.hudUnit * 6.5, "Your favorite masternode list is empty.", "rgb(110, 130, 150)", sceneManager.fontScale * 0.45);
         }
 
+        namespace.notifCount = 0;
         for (var i = 0; i < sceneManager.pageScroller.items.length; i += 1) {
             var item = sceneManager.pageScroller.items[i];
+
+            // Notifications.
+            var oldCount = namespace.notifCount;
+            if (item.star) {
+                var rewards = sceneManager.rewards[item.address];
+                if (rewards) {
+                    for (var r = 0; r < rewards.length; r += 1) {
+                        namespace.notifCount += 1;
+                    }
+                }
+            }
 
             if (item.y - sceneManager.pageScroller.offset + item.height > sceneManager.pageScroller.y + clipOffsetY
                 && item.y - sceneManager.pageScroller.offset - item.height < sceneManager.pageScroller.y + sceneManager.pageScroller.height) {
 
                 context.save();
 
-                namespace.roundRect(context, item.x, item.y, item.width, item.height, sceneManager.hudUnit * 0, (item.star) ? "rgba(234, 242, 246, 1)" : "rgba(255, 255, 255, 1)");
+
+                namespace.roundRect(context, item.x, item.y, item.width, item.height, sceneManager.hudUnit * 0, (oldCount !== namespace.notifCount) ? "rgba(206, 231, 243, 1)" : ((item.star) ? "rgba(234, 242, 246, 1)" : "rgba(255, 255, 255, 1)"));
                 namespace.roundRect(context, item.x, item.y + item.height * 0.99, item.width, item.height * 0.01, item.height * 0.005, "rgba(0, 0, 0, 0.2)");
 
                 context.save();
@@ -146,18 +159,17 @@
                 namespace.drawText(context, sceneManager, item.x + item.height * 0.8 + item.height * 0.5, item.y + item.height * 0.55, item.status, (item.star ? "rgb(241, 247, 168)" : "rgb(255, 255, 255)"), sceneManager.fontScale * 0.3);
 
                 // Draw the reward notifications.
-                var rewards = sceneManager.rewards[item.address];
                 if (item.star) {
+                    var rewards = sceneManager.rewards[item.address];
                     if (rewards) {
                         var startX = item.x + item.height * 0.8 + item.height * 1.1;
-                        for (var r = 0; r < rewards.length; r += 1) {
-                            namespace.roundRect(context, startX, item.y + item.height * 0.515, item.height * 0.3, item.height * 0.2, sceneManager.hudUnit * 0.2, "rgb(237, 28, 36)");
+                        for (var r = 0; r < Math.min(rewards.length, 5); r += 1) {
+                            namespace.roundRect(context, startX, item.y + item.height * 0.515, item.height * 0.3, item.height * 0.2, sceneManager.hudUnit * 0.2, "rgb(28, 186, 237)");
                             namespace.drawText(context, sceneManager, startX + item.height * 0.15, item.y + item.height * 0.55, rewards[r].type, "rgb(255, 255, 255)", sceneManager.fontScale * 0.3);
                             startX += item.height * 0.35;
                         }
                     }
                 }
-
 
                 context.textAlign = "left";
                 context.font = "40px Regular";
@@ -302,6 +314,11 @@
             case namespace.HudEntityTypeEnum.StarButton:
                 context.globalAlpha = entity.enabled ? 1 : sceneManager.searchModeTime * 2;
                 context.drawImage(namespace.Resources.art01, (sceneManager.pageType === namespace.PageTypeEnum.MyMasternodes) ? OFFSET4X : OFFSET8X, (sceneManager.pageType === namespace.PageTypeEnum.MyMasternodes) ? OFFSET2X : OFFSET0X, OFFSET2X, OFFSET2X, rx, ry, entity.width, entity.height);
+
+                if (namespace.notifCount > 0) {
+                    namespace.roundRect(context, rx + entity.height * 0.7, ry + entity.height * 0.7, entity.height * 0.42, entity.height * 0.42, entity.height * 0.1, "rgb(240, 70, 70)", true, sceneManager);
+                    namespace.drawText(context, sceneManager, rx + entity.height * 0.9, ry + entity.height * 0.9, ((namespace.notifCount < 10) ? namespace.notifCount : "*"), "rgb(255, 255, 255)", sceneManager.fontScale * 0.4);
+                }
                 break;
             case namespace.HudEntityTypeEnum.ListButton:
                 namespace.roundRect(context, rx, ry, entity.width, entity.height, entity.height * 0.1, "rgb(166, 186, 197)", true, sceneManager);
@@ -333,9 +350,9 @@
 
                 context.textAlign = "center";
                 namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 19.6 + statsOffset, sceneManager.masternodes.length.toString(), "rgb(255, 255, 255)", sceneManager.fontScale * 0.6);
-                namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 41.6 + statsOffset, sceneManager.masternodestats.dailyAverage.toString(), "rgb(255, 255, 255)", sceneManager.fontScale * 0.6);
-                namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 55.6 + statsOffset, sceneManager.masternodestats.dailyMin.toString(), "rgb(255, 255, 255)", sceneManager.fontScale * 0.6);
-                namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 69.6 + statsOffset, sceneManager.masternodestats.dailyMax.toString(), "rgb(255, 255, 255)", sceneManager.fontScale * 0.6);
+                namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 41.6 + statsOffset, sceneManager.masternodestats.dailyAverage.toFixed(5), "rgb(255, 255, 255)", sceneManager.fontScale * 0.6);
+                namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 55.6 + statsOffset, sceneManager.masternodestats.dailyMin.toFixed(5), "rgb(255, 255, 255)", sceneManager.fontScale * 0.6);
+                namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 69.6 + statsOffset, sceneManager.masternodestats.dailyMax.toFixed(5), "rgb(255, 255, 255)", sceneManager.fontScale * 0.6);
 
                 context.textAlign = "center";
                 context.font = "40px Regular";
@@ -344,7 +361,7 @@
                 namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 50 + statsOffset, "Daily Minimum", "rgb(209, 224, 228)", sceneManager.fontScale * 0.5);
                 namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 64 + statsOffset, "Daily Maximum", "rgb(209, 224, 228)", sceneManager.fontScale * 0.5);
 
-                namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 134 + statsOffset, "Estimates based on weekly historical data.", "rgb(209, 224, 228)", sceneManager.fontScale * 0.35);
+                namespace.drawText(context, sceneManager, rx + entity.width * 0.5, ry + margin * 134 + statsOffset, "Estimates based on previous day historical data.", "rgb(209, 224, 228)", sceneManager.fontScale * 0.35);
                 context.textAlign = "left";
                 namespace.drawText(context, sceneManager, rx + margin * 3, ry + margin * 33 + statsOffset, "MAG", "rgb(209, 224, 228)", sceneManager.fontScale * 0.35);
 
